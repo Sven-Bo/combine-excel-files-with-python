@@ -1,9 +1,7 @@
 import calendar
-import datetime as dt
 from pathlib import Path
 
 import pandas as pd
-import plotly
 import plotly.express as px
 
 BASE_DIR = Path(__file__).parent
@@ -22,17 +20,17 @@ for file in files:
     df["Year"] = pd.DatetimeIndex(df["Date"]).year
     df.dropna(inplace=True)
     df["Month_Name"] = df["Month"].apply(lambda x: calendar.month_abbr[int(x)])
-    combined = combined.append(df, ignore_index=True)
+    combined = pd.concat([combined, df], ignore_index=True)
 
 # Create Bar Chart
 fig = px.bar(combined, x="Month_Name", y="Sales", title="Sales 1Q 2020")
 
 # Save Bar Chart and Export to HTML
-plotly.offline.plot(fig, filename="Sales_1Q_2020.html")
+fig.write_html(str(BASE_DIR / "Sales_1Q_2020.html"))
 
 # Send Report as attached mail
 # Create more charts
 # ...
 
 # Export combined files to Excel
-combined.to_excel("Sales_1Q2020.xlsx", index=False, sheet_name="1Q 2020 Sales")
+combined.to_excel(BASE_DIR / "Sales_1Q2020.xlsx", index=False, sheet_name="1Q 2020 Sales")
